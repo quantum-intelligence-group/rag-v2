@@ -1,2 +1,4 @@
-/temp/
-
+temp/
+.venv/
+*.egg-info
+.env

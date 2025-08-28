@@ -1,0 +1,23 @@
+[project]
+name = "rag-api"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi==0.116.1",
+    "uvicorn[standard]==0.35.0",
+    "pymilvus==2.6.0",
+    "opensearch-py==3.0.0",
+    "redis==6.4",
+    "dramatiq[redis]==1.18.0",
+    "azure-storage-blob==12.26.0",
+    "unstructured==0.18.14",
+    "openai==1.102.0",
+    "prometheus-fastapi-instrumentator==7.1.0",
+]
+
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
