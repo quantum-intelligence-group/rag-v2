@@ -52,7 +52,8 @@ Each task is atomic (one Claude iteration). When complete, mark `[x]` with date 
 
 ## Milestone 3 — Parsing & Normalization
 - [ ] `unstructured` partitioners for PDF/DOCX/HTML (fast path), preserve element type & page numbers.
-- [x] Normalize: collapse whitespace, de‑hyphenate line wraps, strip repeating headers/footers, list→markdown. — **2025-08-29** (created app/ingest/normalize.py with query and document normalization functions, integrated into search endpoint and ingest pipeline)
+- [ ] Normalize document text: collapse whitespace, de‑hyphenate line wraps, strip repeating headers/footers, list→markdown, and removing emojis.
+- [X] Normalize Query text: collapse whitespace, de‑hyphenate line wraps, strip repeating headers/footers, list→markdown, and removing emojis. app/api/ingest/normalize.py
 - [ ] Convert tables to Markdown; emit separate blocks with `is_table=true`.
 
 ## Milestone 4 — Chunking v1
@@ -81,15 +82,12 @@ Each task is atomic (one Claude iteration). When complete, mark `[x]` with date 
 - [ ] p95 ingest time ≤ 120s on dev box for a ~10–20p PDF.
 
 ## Milestone 8 — Retrieval + Answering (Phase 2)  <!-- NEW -->
+- [ ] Implement BM25 searching as standalone endpoint
+- [ ] Implement vector searching as standalone endpoint
 - [ ] Implement **parallel BM25 + vector** retrieval with tag filters.
 - [ ] Add **RRF** fusion; tune `k`.
 - [ ] Optional **reranker** (`bge-reranker-base`) for top‑K.
-- [ ] Small LLM answering with “cite or abstain” prompt template.
-
-## Milestone 9 — Caching (Phase 2)  <!-- NEW -->
-- [ ] Answer cache (keyed by query + doc set).
-- [ ] Embedding cache (keyed by `sha256(text)`).
-- [ ] BM25 result cache (per index).
+- [ ] LLM (grok / openai) answering with “cite or abstain” prompt template.
 
 ## Milestone 10 — Evaluation & Hardening (Phase 2+)  <!-- NEW -->
 - [ ] Ragas eval; collect online feedback (thumbs/clicks).
