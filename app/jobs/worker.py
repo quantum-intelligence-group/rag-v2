@@ -1,6 +1,9 @@
 import dramatiq
 from dramatiq.brokers.redis import RedisBroker
 import os
+from app.logging import init_logging
+
+init_logging()
 
 REDIS_URL = os.getenv("REDIS_URL", "redis://redis:6379/0")
 broker = RedisBroker(url=REDIS_URL)

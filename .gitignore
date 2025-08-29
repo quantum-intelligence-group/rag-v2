@@ -2,3 +2,5 @@ temp/
 .venv/
 *.egg-info
 .env
+__pycache__/
+*.pyc

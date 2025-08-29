@@ -135,3 +135,4 @@ volumes:
   milvus-data:
   opensearch-data:
   redis-data:
+  azurite-data:
