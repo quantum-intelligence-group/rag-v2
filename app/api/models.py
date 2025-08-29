@@ -21,3 +21,26 @@ class JobStatus(BaseModel):
     counts: Optional[Dict[str, int]] = None
     created_at: str
     updated_at: str
+
+# Search models
+class SearchRequest(BaseModel):
+    query: str = Field(..., description="Search query text")
+    tags: Optional[Dict[str, str]] = Field(default_factory=dict, description="Filter tags (tenant, dataset, etc.)")
+    limit: int = Field(default=10, ge=1, le=100, description="Maximum number of results")
+
+class SearchResult(BaseModel):
+    doc_id: str
+    chunk_id: str
+    text: str
+    score: float
+    page_start: Optional[int] = None
+    page_end: Optional[int] = None
+    section_path: Optional[list] = None
+    is_table: bool = False
+
+class SearchResponse(BaseModel):
+    query: str
+    normalized_query: str
+    results: list[SearchResult]
+    total_results: int
+    search_time_ms: float
