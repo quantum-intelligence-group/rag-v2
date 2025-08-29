@@ -52,7 +52,7 @@ Each task is atomic (one Claude iteration). When complete, mark `[x]` with date 
 
 ## Milestone 3 — Parsing & Normalization
 - [ ] `unstructured` partitioners for PDF/DOCX/HTML (fast path), preserve element type & page numbers.
-- [ ] Normalize: collapse whitespace, de‑hyphenate line wraps, strip repeating headers/footers, list→markdown.
+- [x] Normalize: collapse whitespace, de‑hyphenate line wraps, strip repeating headers/footers, list→markdown. — **2025-08-29** (created app/ingest/normalize.py with query and document normalization functions, integrated into search endpoint and ingest pipeline)
 - [ ] Convert tables to Markdown; emit separate blocks with `is_table=true`.
 
 ## Milestone 4 — Chunking v1

@@ -8,6 +8,11 @@ from app.ingest.metadata import (
     merge_metadata,
     enrich_metadata
 )
+from app.ingest.normalize import (
+    normalize_document_text,
+    strip_repeating_headers_footers,
+    convert_lists_to_markdown
+)
 from app.storage import get_storage_client
 
 logger = get_logger(__name__)
@@ -63,24 +68,61 @@ def ingest_blob(job_id: str, blob_path: str, doc_id: str | None = None, tags: di
         with stage("parse", doc_id=doc_id or "", blob_path=blob_path):
             # TODO: Implement parsing with unstructured
             # elements = parse_document(content, content_type)
-            pass
+            # For now, simulate parsed text content
+            raw_text = f"Sample document content for {blob_path}\n\nThis is some text that needs normalization.\n\n1. First item in list\n2. Second item in list\n\n• Bullet point one\n• Bullet point two\n\nRepeating header text\nSome content here\nRepeating header text\nMore content\nRepeating header text\nFinal content"
+        
+        with stage("normalize", doc_id=doc_id):
+            # Apply text normalization pipeline
+            # Step 1: Remove repeating headers/footers
+            normalized_text = strip_repeating_headers_footers(raw_text)
+            
+            # Step 2: Convert lists to markdown format
+            normalized_text = convert_lists_to_markdown(normalized_text)
+            
+            # Step 3: General text normalization (whitespace, dehyphenation, etc.)
+            normalized_text = normalize_document_text(normalized_text)
+            
+            logger.info("text_normalized", extra={
+                "doc_id": doc_id,
+                "original_length": len(raw_text),
+                "normalized_length": len(normalized_text)
+            })
         
         with stage("chunk", doc_id=doc_id):
-            # TODO: Implement chunking logic
+            # TODO: Implement proper chunking logic with sentence splitting
             # raw_chunks = chunk_elements(elements)
-            # For now, create dummy chunks with metadata
+            # For now, create chunks using normalized text
             chunks = []
-            for i in range(3):  # Create 3 dummy chunks
+            
+            # Simple chunking - split normalized text into smaller pieces
+            text_parts = normalized_text.split('\n\n')  # Split by paragraphs
+            for i, text_part in enumerate(text_parts[:3]):  # Use first 3 parts as chunks
+                if text_part.strip():  # Skip empty parts
+                    chunk = {
+                        "doc_id": doc_id,
+                        "chunk_id": f"{i:04d}",  # Zero-padded
+                        "text": text_part.strip(),  # Use normalized text
+                        "is_table": False,
+                        "page_start": i + 1,
+                        "page_end": i + 1,
+                        "section_path": ["Introduction", "Section A"],
+                        "tokens_est": len(text_part.split()) * 1.3,  # Rough token estimate
+                        **final_metadata  # Include all metadata in each chunk
+                    }
+                    chunks.append(chunk)
+            
+            # Ensure we have at least one chunk
+            if not chunks:
                 chunk = {
                     "doc_id": doc_id,
-                    "chunk_id": f"{i:04d}",  # Zero-padded
-                    "text": f"Dummy chunk {i} content",
+                    "chunk_id": "0000",
+                    "text": normalized_text[:500] if len(normalized_text) > 500 else normalized_text,
                     "is_table": False,
-                    "page_start": i + 1,
-                    "page_end": i + 1,
-                    "section_path": ["Introduction", "Section A"],
-                    "tokens_est": 150,
-                    **final_metadata  # Include all metadata in each chunk
+                    "page_start": 1,
+                    "page_end": 1,
+                    "section_path": ["Introduction"],
+                    "tokens_est": min(len(normalized_text.split()) * 1.3, 150),
+                    **final_metadata
                 }
                 chunks.append(chunk)
         
